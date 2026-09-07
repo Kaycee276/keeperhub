@@ -1,5 +1,16 @@
+import { ethers } from "ethers";
 import { describe, expect, it } from "vitest";
 import pythProtocol from "@/protocols/pyth";
+
+const EXPECTED_ADDRESSES: Record<string, string> = {
+  "1": "0x4305FB66699C3B2702D4d05CF36551390A4c69C6",
+  "8453": "0x8250f4aF4B972684F7b336503E2D6dFeDeB1487a",
+  "42161": "0xff1a0f4744e8582DF1aE09D5611b887B6a12925C",
+  "137": "0xff1a0f4744e8582DF1aE09D5611b887B6a12925C",
+  "56": "0x4D7E825f80bDf85e913E0DD2A2D54927e9dE1594",
+  "43114": "0x4305FB66699C3B2702D4d05CF36551390A4c69C6",
+  "11155111": "0xDd24F84d36BF92C65F92307595335bdFab5Bbd21",
+};
 
 describe("Pyth Network Protocol Definition", () => {
   it("has correct protocol metadata and icon path", () => {
@@ -10,34 +21,28 @@ describe("Pyth Network Protocol Definition", () => {
     expect(pythProtocol.contracts.customOracle).toBeDefined();
   });
 
-  it("configures valid checksummed EVM contract addresses across 8 chains without tautology", () => {
+  it("pins exact literal EVM contract addresses and EIP-55 checksums across all 7 supported chains", () => {
     const oracle = pythProtocol.contracts.oracle;
     const customOracle = pythProtocol.contracts.customOracle;
 
-    const expectedChains = [
-      "1",
-      "8453",
-      "42161",
-      "10",
-      "137",
-      "56",
-      "43114",
-      "11155111",
-    ];
-    const evmAddressRegex = /^0x[0-9a-fA-F]{40}$/;
+    expect(Object.keys(oracle.addresses)).toEqual(
+      Object.keys(EXPECTED_ADDRESSES)
+    );
 
-    for (const chainId of expectedChains) {
+    for (const [chainId, expectedAddr] of Object.entries(EXPECTED_ADDRESSES)) {
       const oracleAddr = oracle.addresses[chainId];
       const customAddr = customOracle.addresses[chainId];
 
-      expect(oracleAddr).toBeDefined();
-      expect(customAddr).toBeDefined();
-      expect(oracleAddr).toMatch(evmAddressRegex);
-      expect(customAddr).toBe(oracleAddr);
+      expect(oracleAddr).toBe(expectedAddr);
+      expect(customAddr).toBe(expectedAddr);
+
+      // EIP-55 checksum verification
+      expect(ethers.isAddress(oracleAddr)).toBe(true);
+      expect(ethers.getAddress(oracleAddr)).toBe(oracleAddr);
     }
   });
 
-  it("defines expected read actions including unsafe view functions", () => {
+  it("defines expected read actions including unsafe and 2-arg view functions", () => {
     const actionSlugs = pythProtocol.actions.map((a) => a.slug);
     expect(actionSlugs).toContain("get-price-unsafe");
     expect(actionSlugs).toContain("get-ema-price-unsafe");

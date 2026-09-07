@@ -2,12 +2,11 @@ import type { AbiFunctionOverride } from "@/lib/protocol-registry";
 import { defineAbiProtocol } from "@/lib/protocol-registry";
 import type { ProtocolTestData } from "@/lib/test-data/types";
 
-// Verified EVM Pyth deployment addresses across chains (eth_getCode verified)
+// Verified EVM Pyth deployment addresses across active chains (eth_getCode & live eth_call verified)
 const PYTH_ADDRESSES: Record<string, string> = {
   "1": "0x4305FB66699C3B2702D4d05CF36551390A4c69C6",
   "8453": "0x8250f4aF4B972684F7b336503E2D6dFeDeB1487a",
   "42161": "0xff1a0f4744e8582DF1aE09D5611b887B6a12925C",
-  "10": "0xff1a0f4744e8582DF1aE09D5611b887B6a12925C",
   "137": "0xff1a0f4744e8582DF1aE09D5611b887B6a12925C",
   "56": "0x4D7E825f80bDf85e913E0DD2A2D54927e9dE1594",
   "43114": "0x4305FB66699C3B2702D4d05CF36551390A4c69C6",
@@ -17,6 +16,7 @@ const PYTH_ADDRESSES: Record<string, string> = {
 // Canonical Pyth price feed IDs verified from Pyth catalogue
 const ETH_USD_FEED =
   "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace";
+const ONE_YEAR_SECONDS = "31536000";
 
 const TEST_DATA: ProtocolTestData = {
   "1": {
@@ -28,20 +28,23 @@ const TEST_DATA: ProtocolTestData = {
     actions: {
       "get-price-unsafe": { id: ETH_USD_FEED },
       "get-ema-price-unsafe": { id: ETH_USD_FEED },
+      "get-price-no-older-than": { id: ETH_USD_FEED, age: ONE_YEAR_SECONDS },
+      "get-ema-price-no-older-than": {
+        id: ETH_USD_FEED,
+        age: ONE_YEAR_SECONDS,
+      },
     },
     expectations: {
       "get-price-unsafe": [{ field: "price", nonZero: true }],
       "get-ema-price-unsafe": [{ field: "price", nonZero: true }],
+      "get-price-no-older-than": [{ field: "price", nonZero: true }],
+      "get-ema-price-no-older-than": [{ field: "price", nonZero: true }],
     },
     skipped: {
       "get-price":
         "Pyth getPrice reverts StalePrice() unless a fresh price update payload was submitted in the same block",
-      "get-price-no-older-than":
-        "Pyth getPriceNoOlderThan reverts StalePrice() unless a fresh price update payload was submitted",
       "get-ema-price":
         "Pyth getEmaPrice reverts StalePrice() unless a fresh price update payload was submitted",
-      "get-ema-price-no-older-than":
-        "Pyth getEmaPriceNoOlderThan reverts StalePrice() unless a fresh price update payload was submitted",
       "custom-get-price":
         "Custom oracle userSpecifiedAddress contract is tested via build-workflow test runner",
       "custom-get-price-unsafe":
@@ -143,7 +146,7 @@ const OUTPUT_OVERRIDES = {
   price: {
     name: "price",
     label:
-      "Price (int64 raw integer, scaled by 10^expo e.g. 190533915588 with expo -8 is $1905.33)",
+      "Price (int64 raw integer, scaled by 10^expo e.g. 190533915588 with expo -8 is $1905.34)",
   },
   conf: { name: "conf", label: "Confidence Interval (uint64)" },
   expo: { name: "expo", label: "Exponent (int32)" },

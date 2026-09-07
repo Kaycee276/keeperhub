@@ -28,6 +28,7 @@ const CHAIN_ID = "11155111"; // Sepolia
 const CHAIN_ID_NUMBER = 11_155_111;
 const ETH_USD_FEED =
   "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace";
+const ONE_YEAR_SECONDS = "31536000";
 
 // Resolve Sepolia RPC URLs via shared config pipeline
 const rpcConfig = parseRpcConfig(process.env.CHAIN_RPC_CONFIG);
@@ -113,6 +114,93 @@ describe("Pyth Network on-chain integration (Sepolia)", () => {
       expect(decoded).toBeDefined();
       expect(
         typeof decoded.price === "bigint" || typeof decoded.price === "number"
+      ).toBe(true);
+      expect(
+        typeof decoded.conf === "bigint" || typeof decoded.conf === "number"
+      ).toBe(true);
+      expect(
+        typeof decoded.expo === "bigint" || typeof decoded.expo === "number"
+      ).toBe(true);
+      expect(
+        typeof decoded.publishTime === "bigint" ||
+          typeof decoded.publishTime === "number"
+      ).toBe(true);
+    },
+    30_000
+  );
+
+  itOnchain(
+    "get-price-no-older-than: 2-arg eth_call returns decodable price tuple",
+    async () => {
+      const { to, data, contract } = buildCalldata({
+        protocol: pythDef,
+        actionSlug: "get-price-no-older-than",
+        sampleInputs: { id: ETH_USD_FEED, age: ONE_YEAR_SECONDS },
+        chainId: CHAIN_ID,
+      });
+
+      const provider = await makeProvider();
+      const result = await provider.executeWithFailover(
+        async (p) => await p.call({ to, data })
+      );
+
+      const abi = JSON.parse(contract.abi as string);
+      const iface = new ethers.Interface(abi);
+      const decoded = iface.decodeFunctionResult("getPriceNoOlderThan", result);
+
+      expect(decoded).toBeDefined();
+      expect(
+        typeof decoded.price === "bigint" || typeof decoded.price === "number"
+      ).toBe(true);
+      expect(
+        typeof decoded.conf === "bigint" || typeof decoded.conf === "number"
+      ).toBe(true);
+      expect(
+        typeof decoded.expo === "bigint" || typeof decoded.expo === "number"
+      ).toBe(true);
+      expect(
+        typeof decoded.publishTime === "bigint" ||
+          typeof decoded.publishTime === "number"
+      ).toBe(true);
+    },
+    30_000
+  );
+
+  itOnchain(
+    "get-ema-price-no-older-than: 2-arg eth_call returns decodable EMA price tuple",
+    async () => {
+      const { to, data, contract } = buildCalldata({
+        protocol: pythDef,
+        actionSlug: "get-ema-price-no-older-than",
+        sampleInputs: { id: ETH_USD_FEED, age: ONE_YEAR_SECONDS },
+        chainId: CHAIN_ID,
+      });
+
+      const provider = await makeProvider();
+      const result = await provider.executeWithFailover(
+        async (p) => await p.call({ to, data })
+      );
+
+      const abi = JSON.parse(contract.abi as string);
+      const iface = new ethers.Interface(abi);
+      const decoded = iface.decodeFunctionResult(
+        "getEmaPriceNoOlderThan",
+        result
+      );
+
+      expect(decoded).toBeDefined();
+      expect(
+        typeof decoded.price === "bigint" || typeof decoded.price === "number"
+      ).toBe(true);
+      expect(
+        typeof decoded.conf === "bigint" || typeof decoded.conf === "number"
+      ).toBe(true);
+      expect(
+        typeof decoded.expo === "bigint" || typeof decoded.expo === "number"
+      ).toBe(true);
+      expect(
+        typeof decoded.publishTime === "bigint" ||
+          typeof decoded.publishTime === "number"
       ).toBe(true);
     },
     30_000
