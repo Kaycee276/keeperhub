@@ -25,8 +25,8 @@ describe("Pyth Network Protocol Definition", () => {
     const oracle = pythProtocol.contracts.oracle;
     const customOracle = pythProtocol.contracts.customOracle;
 
-    expect(Object.keys(oracle.addresses)).toEqual(
-      Object.keys(EXPECTED_ADDRESSES)
+    expect(Object.keys(oracle.addresses).sort()).toEqual(
+      Object.keys(EXPECTED_ADDRESSES).sort()
     );
 
     for (const [chainId, expectedAddr] of Object.entries(EXPECTED_ADDRESSES)) {
