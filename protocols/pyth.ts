@@ -14,7 +14,8 @@ const PYTH_ADDRESSES: Record<string, string> = {
 };
 
 // Canonical Pyth price feed IDs verified from Pyth catalogue
-const ETH_USD_FEED = "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace";
+const ETH_USD_FEED =
+  "0xff61491a931112ddf1bd8147cd1b641375f79f5825126d665480874634fd0ace";
 const ONE_YEAR_SECONDS = "31536000";
 
 const TEST_DATA: ProtocolTestData = {
@@ -28,7 +29,10 @@ const TEST_DATA: ProtocolTestData = {
       "get-price-unsafe": { id: ETH_USD_FEED },
       "get-ema-price-unsafe": { id: ETH_USD_FEED },
       "get-price-no-older-than": { id: ETH_USD_FEED, age: ONE_YEAR_SECONDS },
-      "get-ema-price-no-older-than": { id: ETH_USD_FEED, age: ONE_YEAR_SECONDS },
+      "get-ema-price-no-older-than": {
+        id: ETH_USD_FEED,
+        age: ONE_YEAR_SECONDS,
+      },
     },
     expectations: {
       "get-price-unsafe": [{ field: "price", nonZero: true }],
@@ -37,14 +41,22 @@ const TEST_DATA: ProtocolTestData = {
       "get-ema-price-no-older-than": [{ field: "price", nonZero: true }],
     },
     skipped: {
-      "get-price": "Pyth getPrice reverts StalePrice() unless a fresh price update payload was submitted within Pyth's validity window (default 60 seconds)",
-      "get-ema-price": "Pyth getEmaPrice reverts StalePrice() unless a fresh price update payload was submitted within Pyth's validity window (default 60 seconds)",
-      "custom-get-price": "Custom oracle userSpecifiedAddress contract is tested via build-workflow test runner",
-      "custom-get-price-unsafe": "Custom oracle userSpecifiedAddress contract is tested via build-workflow test runner",
-      "custom-get-price-no-older-than": "Custom oracle userSpecifiedAddress contract is tested via build-workflow test runner",
-      "custom-get-ema-price": "Custom oracle userSpecifiedAddress contract is tested via build-workflow test runner",
-      "custom-get-ema-price-unsafe": "Custom oracle userSpecifiedAddress contract is tested via build-workflow test runner",
-      "custom-get-ema-price-no-older-than": "Custom oracle userSpecifiedAddress contract is tested via build-workflow test runner",
+      "get-price":
+        "Pyth getPrice reverts StalePrice() unless a fresh price update payload was submitted within Pyth's validity window (default 60 seconds)",
+      "get-ema-price":
+        "Pyth getEmaPrice reverts StalePrice() unless a fresh price update payload was submitted within Pyth's validity window (default 60 seconds)",
+      "custom-get-price":
+        "Custom oracle userSpecifiedAddress contract is tested via build-workflow test runner",
+      "custom-get-price-unsafe":
+        "Custom oracle userSpecifiedAddress contract is tested via build-workflow test runner",
+      "custom-get-price-no-older-than":
+        "Custom oracle userSpecifiedAddress contract is tested via build-workflow test runner",
+      "custom-get-ema-price":
+        "Custom oracle userSpecifiedAddress contract is tested via build-workflow test runner",
+      "custom-get-ema-price-unsafe":
+        "Custom oracle userSpecifiedAddress contract is tested via build-workflow test runner",
+      "custom-get-ema-price-no-older-than":
+        "Custom oracle userSpecifiedAddress contract is tested via build-workflow test runner",
     },
   },
 };
@@ -133,7 +145,8 @@ const PYTH_ABI = JSON.stringify([
 const OUTPUT_OVERRIDES = {
   price: {
     name: "price",
-    label: "Price (int64 raw integer, scaled by 10^expo e.g. 190533915588 with expo -8 is $1905.34)",
+    label:
+      "Price (int64 raw integer, scaled by 10^expo e.g. 190533915588 with expo -8 is $1905.34)",
   },
   conf: { name: "conf", label: "Confidence Interval (uint64)" },
   expo: { name: "expo", label: "Exponent (int32)" },
@@ -144,7 +157,8 @@ const ORACLE_OVERRIDES: Record<string, AbiFunctionOverride> = {
   getPriceUnsafe: {
     slug: "get-price-unsafe",
     label: "Get Price (Unsafe)",
-    description: "Read the last pushed on-chain price of any age (check publishTime for freshness).",
+    description:
+      "Read the last pushed on-chain price of any age (check publishTime for freshness).",
     inputs: {
       id: { label: "Price Feed ID (bytes32 hex)" },
     },
@@ -174,7 +188,8 @@ const ORACLE_OVERRIDES: Record<string, AbiFunctionOverride> = {
   getEmaPriceUnsafe: {
     slug: "get-ema-price-unsafe",
     label: "Get EMA Price (Unsafe)",
-    description: "Read the last pushed on-chain EMA price of any age (check publishTime for freshness).",
+    description:
+      "Read the last pushed on-chain EMA price of any age (check publishTime for freshness).",
     inputs: {
       id: { label: "Price Feed ID (bytes32 hex)" },
     },
@@ -183,7 +198,8 @@ const ORACLE_OVERRIDES: Record<string, AbiFunctionOverride> = {
   getEmaPrice: {
     slug: "get-ema-price",
     label: "Get EMA Price",
-    description: "Read the current exponential moving average (EMA) price tuple from the on-chain Pyth contract.",
+    description:
+      "Read the current exponential moving average (EMA) price tuple from the on-chain Pyth contract.",
     inputs: {
       id: { label: "Price Feed ID (bytes32 hex)" },
     },
@@ -192,7 +208,8 @@ const ORACLE_OVERRIDES: Record<string, AbiFunctionOverride> = {
   getEmaPriceNoOlderThan: {
     slug: "get-ema-price-no-older-than",
     label: "Get EMA Price No Older Than",
-    description: "Read the current EMA price tuple from the Pyth contract, reverting if older than max age.",
+    description:
+      "Read the current EMA price tuple from the Pyth contract, reverting if older than max age.",
     inputs: {
       id: { label: "Price Feed ID (bytes32 hex)" },
       age: { label: "Max Age (seconds)" },
@@ -205,7 +222,8 @@ const CUSTOM_ORACLE_OVERRIDES: Record<string, AbiFunctionOverride> = {
   getPriceUnsafe: {
     slug: "custom-get-price-unsafe",
     label: "Get Price Unsafe (Custom Oracle)",
-    description: "Read the last pushed on-chain price of any age from a custom Pyth oracle address.",
+    description:
+      "Read the last pushed on-chain price of any age from a custom Pyth oracle address.",
     inputs: {
       id: { label: "Price Feed ID (bytes32 hex)" },
     },
@@ -214,7 +232,8 @@ const CUSTOM_ORACLE_OVERRIDES: Record<string, AbiFunctionOverride> = {
   getPrice: {
     slug: "custom-get-price",
     label: "Get Price (Custom Oracle)",
-    description: "Read current price tuple from a custom Pyth oracle contract address.",
+    description:
+      "Read current price tuple from a custom Pyth oracle contract address.",
     inputs: {
       id: { label: "Price Feed ID (bytes32 hex)" },
     },
@@ -223,7 +242,8 @@ const CUSTOM_ORACLE_OVERRIDES: Record<string, AbiFunctionOverride> = {
   getPriceNoOlderThan: {
     slug: "custom-get-price-no-older-than",
     label: "Get Price No Older Than (Custom Oracle)",
-    description: "Read price tuple from a custom Pyth oracle address with max age assertion.",
+    description:
+      "Read price tuple from a custom Pyth oracle address with max age assertion.",
     inputs: {
       id: { label: "Price Feed ID (bytes32 hex)" },
       age: { label: "Max Age (seconds)" },
@@ -233,7 +253,8 @@ const CUSTOM_ORACLE_OVERRIDES: Record<string, AbiFunctionOverride> = {
   getEmaPriceUnsafe: {
     slug: "custom-get-ema-price-unsafe",
     label: "Get EMA Price Unsafe (Custom Oracle)",
-    description: "Read the last pushed on-chain EMA price of any age from a custom Pyth oracle address.",
+    description:
+      "Read the last pushed on-chain EMA price of any age from a custom Pyth oracle address.",
     inputs: {
       id: { label: "Price Feed ID (bytes32 hex)" },
     },
@@ -242,7 +263,8 @@ const CUSTOM_ORACLE_OVERRIDES: Record<string, AbiFunctionOverride> = {
   getEmaPrice: {
     slug: "custom-get-ema-price",
     label: "Get EMA Price (Custom Oracle)",
-    description: "Read EMA price tuple from a custom Pyth oracle contract address.",
+    description:
+      "Read EMA price tuple from a custom Pyth oracle contract address.",
     inputs: {
       id: { label: "Price Feed ID (bytes32 hex)" },
     },
@@ -251,7 +273,8 @@ const CUSTOM_ORACLE_OVERRIDES: Record<string, AbiFunctionOverride> = {
   getEmaPriceNoOlderThan: {
     slug: "custom-get-ema-price-no-older-than",
     label: "Get EMA Price No Older Than (Custom Oracle)",
-    description: "Read EMA price tuple from a custom Pyth oracle address with max age assertion.",
+    description:
+      "Read EMA price tuple from a custom Pyth oracle address with max age assertion.",
     inputs: {
       id: { label: "Price Feed ID (bytes32 hex)" },
       age: { label: "Max Age (seconds)" },
@@ -263,7 +286,8 @@ const CUSTOM_ORACLE_OVERRIDES: Record<string, AbiFunctionOverride> = {
 export default defineAbiProtocol({
   name: "Pyth Network",
   slug: "pyth",
-  description: "Pyth Network: cross-chain decentralized on-chain price oracle feeds",
+  description:
+    "Pyth Network: cross-chain decentralized on-chain price oracle feeds",
   website: "https://pyth.network",
   icon: "/protocols/pyth.png",
 
