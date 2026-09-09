@@ -1,5 +1,3 @@
 packages:
   - "."
   - "sandbox"
-allowBuilds:
-  prisma: true
